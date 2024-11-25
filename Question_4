@@ -1,0 +1,87 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct {
+    int *data;
+    int size;
+    int capacity;
+} Stack;
+
+
+Stack* createStack(int capacity) {
+    Stack *stack = (Stack*)malloc(sizeof(Stack));
+    stack->data = (int*)malloc(capacity * sizeof(int));
+    stack->size = 0;
+    stack->capacity = capacity;
+    return stack;
+}
+
+
+void push(Stack *stack, int value) {
+    stack->data[stack->size++] = value;
+}
+
+
+int pop(Stack *stack) {
+    return stack->data[--stack->size];
+}
+
+int top(Stack *stack) {
+    return stack->data[stack->size - 1];
+}
+
+int isEmpty(Stack *stack) {
+    return stack->size == 0;
+}
+
+void getMax(int n, char* operations[n]) {
+    Stack* stack = createStack(n);
+    Stack* maxStack = createStack(n);
+    
+    for (int i = 0; i < n; i++) {
+        int x;
+        if (operations[i][0] == '1') {  
+            sscanf(operations[i], "1 %d", &x);
+            push(stack, x);
+
+            if (isEmpty(maxStack) || x >= top(maxStack)) {
+                push(maxStack, x);  
+            } else {
+                push(maxStack, top(maxStack));  
+            }
+        } 
+        else if (operations[i][0] == '2') {  
+            pop(stack);
+            pop(maxStack);  
+        } 
+        else if (operations[i][0] == '3') {  
+            printf("%d\n", top(maxStack)); 
+        }
+    }
+
+    free(stack->data);
+    free(stack);
+    free(maxStack->data);
+    free(maxStack);
+}
+
+int main() {
+    int n;
+    scanf("%d", &n); 
+    getchar(); 
+ 
+    char* operations[n];
+    for (int i = 0; i < n; i++) {
+        operations[i] = (char*)malloc(100 * sizeof(char));
+        fgets(operations[i], 100, stdin);  
+    }
+    
+
+    getMax(n, operations);
+
+    for (int i = 0; i < n; i++) {
+        free(operations[i]);
+    }
+
+    return 0;
+}
